@@ -1,0 +1,29 @@
+{
+  "name": "gameoflife",
+  "description": "Conway's Game Of Life - Javascript implementation for node.js and AngularJS",
+  "main": "./index",
+  "author": {
+    "name": "Peter Hurst"
+  },
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petehurst/gameoflife.git"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.4.x"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "async": "^0.9.0",
+    "lodash": "^2.4.1"
+  },
+  "devDependencies": {
+    "chai": "^1.10.0",
+    "mocha": "^2.0.1",
+    "rimraf": "^2.2.8"
+  }
+}
