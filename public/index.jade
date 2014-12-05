@@ -1,0 +1,34 @@
+doctype html
+html(ng-app="GameOfLife")
+  head
+    title Game of Life in AngularJS
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    link(href="lib/bootstrap/dist/css/bootstrap.css",rel="stylesheet")
+    link(href="lib/bootstrap/dist/css/bootstrap-theme.css",rel="stylesheet")
+  body
+    article#main.container()
+      header.jumbotron
+        h1 Game of life
+      div#content(ui-view)
+      footer
+    script(src="lib/jquery/dist/jquery.js")
+    script(src="lib/async/lib/async.js")
+    script(src="lib/lodash/dist/lodash.js")
+    script(src="lib/angular/angular.js")
+    script(src="lib/angular-ui-utils/ui-utils.js")
+    script(src="lib/angular-ui-router/release/angular-ui-router.js")
+    script(src="lib/angular-bootstrap/ui-bootstrap-tpls.js")
+    script(src="lib/ngstorage/ngStorage.js")
+    script(src="application.js")
+    script(src="controllers/auth-controller.js")
+    script(src="controllers/logs-controller.js")
+    script(src="services/content-service.js")
+    script(src="controllers/content-controller.js")
+    script(src="controllers/create-controller.js")
+    script(src="directives/delta-field-directive.js")
+    script(src="directives/delta-model-directive.js")
+    script(src="lib/bootstrap/dist/js/bootstrap.js")

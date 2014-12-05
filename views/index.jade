@@ -1,0 +1,20 @@
+doctype html
+html(ng-app="GameOfLife")
+  head
+    title Game of Life in AngularJS
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    link(href="lib/bootstrap/dist/css/bootstrap.css",rel="stylesheet")
+    link(href="lib/bootstrap/dist/css/bootstrap-theme.css",rel="stylesheet")
+  body
+    article#main.container()
+      header.jumbotron
+        h1 Game of life
+      div#content(ui-view)
+      footer
+
+    each s in scripts
+      script(src=s)
