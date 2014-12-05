@@ -6942,4 +6942,25 @@ module.exports = GridCell;
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[2]);
+},{}],5:[function(require,module,exports){
+var engine = require('../../lib/GameOfLife');
+var options = {
+  width:10,
+  height:10
+};
+
+angular.module('GameOfLife')
+  .controller('GameController', ['$scope',function($scope){
+
+    $scope.game = engine.fromSize(width,height);
+
+    function bind() {
+      $scope.grid = $scope.game.cells();
+    };
+
+    $scope.init = function() {
+      bind();
+    }
+
+  }]);
+},{"../../lib/GameOfLife":2}]},{},[5]);

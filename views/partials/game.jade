@@ -1,4 +1,5 @@
 #game(ng-controller='GameController', ng-init='init()')
+  h1 Game Grid
   #game-controls
     button(ng-click='next()', title='Run next iteration') Next
     button(ng-click='continous()', title='Continually iterate', ng-if='!running') Continuous
@@ -9,5 +10,5 @@
     .grid
       .grid-row(ng-repeat='row in grid')
         .grid-cell(ng-repeat='cell in row')
-          span(ng-class='{ alive: cell==="1" }', ng-repeat='{}')
+          span(ng-class='{ alive: cell==="1" }')
             {{ cell }}

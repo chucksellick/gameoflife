@@ -1,16 +1,20 @@
-var engine = require('GameOfLife');
+var engine = require('../../lib/GameOfLife');
 var options = {
   width:10,
   height:10
 };
 
 angular.module('GameOfLife')
-  .controller('GameController', [$scope,function($scope){
+  .controller('GameController', ['$scope',function($scope){
 
     $scope.game = engine.fromSize(width,height);
 
     function bind() {
       $scope.grid = $scope.game.cells();
     };
+
+    $scope.init = function() {
+      bind();
+    }
 
   }]);
