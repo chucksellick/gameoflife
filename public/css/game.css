@@ -1,0 +1,17 @@
+.grid-cell {
+  float:left;
+  width:20px;
+  height:20px;
+  border:solid 1px black;
+}
+.grid-cell span {
+  display:block;
+  width:20px;
+  height:20px;
+}
+.grid-cell .alive {
+  background-color:#ff0;
+}
+.grid-row {
+  clear:both;
+}

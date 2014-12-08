@@ -9,6 +9,19 @@ function GameGrid(map){
   this.map = map;
 }
 
+GameGrid.prototype.initialize = function(width, height) {
+  this.map = [];
+  this.width = width;
+  this.height = height;
+  for (var y=0; y<height; y++) {
+    var row = [];
+    for (var x=0; x<width; x++) {
+      row.push(new GridCell(this,x,y,false));
+    }
+    this.map.push(row);
+  }
+}
+
 /**
  * Gets a GridCell object for an x,y coordinate
  */
@@ -16,9 +29,9 @@ GameGrid.prototype.get = function(x,y) {
   if (typeof this.map[y] === 'undefined' || typeof this.map[y][x] === 'undefined')
     return undefined;
 
-  var val = this.map[y][x];
-  return new GridCell(this, x, y, (val==='1'));
+  return this.map[y][x];
 }
+
 /**
  * Set a cell in the grid
  * 
@@ -26,26 +39,9 @@ GameGrid.prototype.get = function(x,y) {
  * with just the changed cell, not very performant but extremely flexible.
  */
 GameGrid.prototype.set = function(x,y,alive) {
-  var split = this.map[y].split('');
-  split[x] = alive ? '1' : '0';
-  this.map[y] = split.join('');
+  this.map[y][x].alive = alive;
 }
 
-/**
- * Clone this map
- */
-GameGrid.prototype.clone = function() {
-  return new GameGrid(_.clone(this.map)); // Shallow clone is fine since it's a string map
-}
-
-/**
- * Constructor to create an empty game grid of specific width and height
- */
- /*
-GameGrid.ofSize = function(x,y) {
-
-}
-*/
 module.exports = GameGrid;
 
 },{"./GridCell":3,"lodash":4}],2:[function(require,module,exports){
@@ -54,28 +50,29 @@ var _ = require('lodash');
 
 /** Constructor */
 function GameOfLife(){
-  this.grids = { 
-    current:null,
-    previous:null
-  };
-  this.rules = {
-    minSurvive: 2,
-    maxSurvive: 3,
-    minReproduce: 4,
-    maxReproduce: 8
-  };
-}
-
-/**
- * Sets the current grid, and pushes the last iteration back into grids.previous
- */
-GameOfLife.prototype.setCurrent = function(grid) {
-  this.grids.previous = this.grids.current;
-  this.grids.current = grid;
+  this.grid = new GameGrid();
 }
 
 GameOfLife.prototype.cell = function(x,y){
-  return this.grids.current.get(x,y);
+  return this.grid.get(x,y);
+}
+
+GameOfLife.prototype.cells = function(){
+  var cells = [];
+  for (y=0;y<this.height;y++) {
+    row = [];
+    for (x=0;x<this.width;x++){
+      row.push(this.cell(x,y));
+    }
+    cells.push(row);
+  }
+  return cells;
+}
+
+GameOfLife.prototype.setSize = function(width,height){
+  this.width = width;
+  this.height = height;
+  this.grid.initialize(width,height);
 }
 
 /**
@@ -83,25 +80,41 @@ GameOfLife.prototype.cell = function(x,y){
  */
 GameOfLife.prototype.iterate = function(){
   var x,y;
-  
-  // Clone a new grid
-  this.setCurrent(this.grids.current.clone());
 
+  // Precalculate neighbour count for all cells so subsequent changes don't distort the rules
+  var lastNeighbours = [];
+  for (y=0;y<this.height;y++) {
+    lastNeighbours[y] = [];
+    for (x=0;x<this.width;x++) {
+      // Get neighbours from the cell
+      var cell = this.grid.get(x,y);
+      var neighbours = cell.neighbours();
+      lastNeighbours[y][x] = neighbours;
+    }
+  }
+  
   for (x=0;x<this.width;x++) {
     for (y=0;y<this.height;y++) {
       // Get neighbours from the cell
-      var cell = this.grids.previous.get(x,y);
-      var neighbours = cell.neighbours();
+      var cell = this.cell(x,y);
+      var neighbours = lastNeighbours[y][x];
       var alive = cell.alive;
       // Apply rules
-      if (alive && (neighbours < this.rules.minSurvive || neighbours > this.rules.maxSurvive)) {
-        alive = false;
-      }
-      else if (!alive && (neighbours >= this.rules.minReproduce && neighbours <= this.rules.maxReproduce)) {
-        alive = true;
+      if (alive) {
+        // Die less than 2 or greater than 3 neighbours
+        if(neighbours < 2 || neighbours > 3) {
+          alive = false;
+        }
+      } else {
+        // Reproduce with exactly 3 neighbours
+        if (neighbours === 3) {
+          alive = true;
+        }
       }
       // Store value in grid
-      this.grids.current.set(x,y,alive);
+      if (alive !== cell.alive) {
+        cell.set(alive);
+      }
     }
   }
 }
@@ -111,10 +124,20 @@ GameOfLife.prototype.iterate = function(){
  */
 GameOfLife.fromMap = function(map) {
   var game = new GameOfLife();
-  game.setCurrent(new GameGrid(map));
   // TODO: Check whole map is valid, i.e. every row the same length, throw an error if not
-  game.height = map.length;
-  game.width = map[0].length;
+  game.setSize(map.length,map[0].length);
+  for (y=0;y<map.length;y++) {
+    var row = map[y];
+    for (x=0;x<row.length;x++) {
+      game.cell(x,y).alive = (row[x]==='1' ? true : false);
+    }
+  }
+  return game;
+}
+
+GameOfLife.fromSize = function(width,height) {
+  var game = new GameOfLife();
+  game.setSize(width, height);
   return game;
 }
 
@@ -151,6 +174,14 @@ GridCell.prototype.neighbours = function(){
   }
   return count;
 }
+
+GridCell.prototype.set = function(alive) {
+  this.alive = alive;
+}
+
+GridCell.prototype.toggle = function() {
+  this.set(!this.alive);
+};
 
 module.exports = GridCell;
 },{}],4:[function(require,module,exports){
@@ -6945,22 +6976,40 @@ module.exports = GridCell;
 },{}],5:[function(require,module,exports){
 var engine = require('../../lib/GameOfLife');
 var options = {
-  width:10,
-  height:10
+  width:20,
+  height:20
 };
 
 angular.module('GameOfLife')
-  .controller('GameController', ['$scope',function($scope){
-
-    $scope.game = engine.fromSize(width,height);
+  .controller('GameController', ['$scope','$interval',function($scope, $interval){
 
     function bind() {
       $scope.grid = $scope.game.cells();
     };
 
     $scope.init = function() {
+      $scope.game = engine.fromSize(options.width,options.height);
       bind();
     }
+
+    $scope.iterate = function() {
+      $scope.game.iterate();
+    }
+
+    $scope.clear = function() {
+      $scope.init();
+    }
+
+    var promise;
+    $scope.continuous = function(){
+      $scope.running = true;
+      promise = $interval($scope.iterate, 100);
+    };
+
+    $scope.pause = function(){
+      $interval.clear(promise);
+      $scope.running = false;
+    };
 
   }]);
 },{"../../lib/GameOfLife":2}]},{},[5]);

@@ -1,14 +1,12 @@
 #game(ng-controller='GameController', ng-init='init()')
   h1 Game Grid
   #game-controls
-    button(ng-click='next()', title='Run next iteration') Next
-    button(ng-click='continous()', title='Continually iterate', ng-if='!running') Continuous
+    button(ng-click='iterate()', title='Run next iteration') Next
+    button(ng-click='continuous()', title='Continually iterate', ng-if='!running') Continuous
     button(ng-click='pause()', title='Continually iterate', ng-if='running') Pause
     button(ng-click='clear()', title='Clear the grid') Clear
 
   #game-board
-    .grid
+    .grid(grid)
       .grid-row(ng-repeat='row in grid')
-        .grid-cell(ng-repeat='cell in row')
-          span(ng-class='{ alive: cell==="1" }')
-            {{ cell }}
+        .grid-cell(ng-repeat='cell in row', grid-cell, cell='cell')
