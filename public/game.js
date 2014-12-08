@@ -6974,7 +6974,9 @@ module.exports = GridCell;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],5:[function(require,module,exports){
+
 var engine = require('../../lib/GameOfLife');
+
 var options = {
   width:20,
   height:20
@@ -7007,7 +7009,7 @@ angular.module('GameOfLife')
     };
 
     $scope.pause = function(){
-      $interval.clear(promise);
+      $interval.cancel(promise);
       $scope.running = false;
     };
 
