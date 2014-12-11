@@ -15,65 +15,88 @@ describe('Game of life', function(){
     expect(element.all(by.css('.grid-cell')).count()).toEqual(400);
   });
 
-  /*
+  // Shortcut to access grid coords using CSS pseudo selectors
+  function findCell(x,y) {
+    return element(by.css('.grid .grid-row:nth-child('+(y+1)+') .grid-cell:nth-child('+(x+1)+') span'));
+  }
 
   describe('with an empty grid', function() {
-
     it('Makes a cell alive when clicking on it', function(){
-      browser.get('/');
-      var cell_1_1 = element(by.class('grid-row')[1].children()[1]);
-      expect(cell_1_1.hasClass("alive").toEqual(false));
+      var cell_1_1 = findCell(1,1);
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(0);
+      expect(cell_1_1.getAttribute("class")).toEqual("");
       cell_1_1.click();
-      expect(cell_1_1.hasClass("alive").toEqual(true));
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(1);
+      expect(cell_1_1.getAttribute("class")).toEqual("alive");
     });
-
   });
 
+  var nextButton = element(by.id('next-button'));
+  var clearButton = element(by.id('clear-button'));
+
   describe('with a single alive cell', function() {
-    var cell_1_1 = element(by.class('grid-row')[1].children()[1]);
-    var nextButton = element(by.id('next-button'));
-    var clearButton = element(by.id('clear-button'));
+    var cell_1_1 = findCell(1,1);
 
     beforeEach(function(){
-      browser.get('/');
       cell_1_1.click();
+    });
+
+    it('has two alive cells if clicking on another cell', function(){
+      var cell_1_2 = findCell(1,2);
+      cell_1_2.click();
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(2);
+      expect(cell_1_1.getAttribute("class")).toEqual("alive");
+      expect(cell_1_2.getAttribute("class")).toEqual("alive");
     });
 
     it('makes a cell not alive when clicking on it again', function(){
       cell_1_1.click();
-      expect(cell_1_1.hasClass("alive").toEqual(false));
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(0);
+      expect(cell_1_1.getAttribute("class")).toEqual("");
     });
 
     it('kills the cell by iterating the grid', function(){
       nextButton.click();
-      // TODO: Expect ALL cells to not be alive
-      expect(cell_1_1.hasClass("alive").toEqual(false));
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(0);
+      expect(cell_1_1.getAttribute("class")).toEqual("");
     });
 
     it('clears the grid when the clear button is clicked', function(){
       clearButton.click();
-
-
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(0);
+      expect(cell_1_1.getAttribute("class")).toEqual("");
     });
   });
+
   describe('with a cyclic pattern', function() {
 
     beforeEach(function(){
-      browser.get('/');
-      getCell(1,0).click();
-      getCell(1,1).click();
-      getCell(1,2).click();
+      findCell(1,0).click();
+      findCell(1,1).click();
+      findCell(1,2).click();
     });
 
     it('produces the next cycle by iterating', function(){
       nextButton.click();
-      expect(getCell(1,0).hasClass('alive').toEqual(false));
-      expect(getCell(1,1).hasClass('alive').toEqual(false));
-      expect(getCell(1,2).hasClass('alive').toEqual(false));
-      expect(getCell(0,1).hasClass('alive').toEqual(false));
-      expect(getCell(1,0).hasClass('alive').toEqual(false));
-
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(3);
+      expect(findCell(1,0).getAttribute('class')).toEqual('');
+      expect(findCell(1,1).getAttribute('class')).toEqual('alive');
+      expect(findCell(1,2).getAttribute('class')).toEqual('');
+      expect(findCell(0,1).getAttribute('class')).toEqual('alive');
+      expect(findCell(1,0).getAttribute('class')).toEqual('alive');
     });
+
+    it('returns to the original pattern on the second iteration', function(){
+      nextButton.click();
+      nextButton.click();
+      expect(element.all(by.css('.grid-cell .alive')).count()).toEqual(3);
+      expect(findCell(1,0).getAttribute('class')).toEqual('alive');
+      expect(findCell(1,1).getAttribute('class')).toEqual('alive');
+      expect(findCell(1,2).getAttribute('class')).toEqual('alive');
+      expect(findCell(0,1).getAttribute('class')).toEqual('');
+      expect(findCell(1,0).getAttribute('class')).toEqual('');
+    });
+
+
   });
-*/
 });
